@@ -32,7 +32,41 @@ class PayoutController extends Controller
             'bonus' => $bonus,
             'payout' => $payout,
             'employe' => $employe,
+            'rank' => $rank, 
+            'date' => null
+        ];
+        // dd($data);
+        return view('pages.payout')->with('data', $data);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Request $request)
+    {
+        $date = $request->date;
+        $month = date("m", strtotime($date));
+        $Year = date("Y", strtotime($date)); 
+
+        $rank = RankController::show();
+        $payout = Payout::whereYear('period',  $Year)
+            ->whereMonth('period', $month)
+            ->leftjoin('bonuses' , 'bonuses.id', 'bonus_id' )
+            ->join('employes' , 'employes.id', 'employe_id' )
+            ->leftjoin('positions', 'positions.id', 'employes.position_id')
+            ->select('payouts.*', 'employes.*', 'bonuses.name as bonus_name', 'bonuses.value as bonus_value', 'positions.name as position')
+            ->get()->toArray();
+        
+        $bonus = Bonus::all()->toArray();
+        $employe = Employe::all()->toArray();
+        $data = (object)[
+            'bonus' => $bonus,
+            'payout' => $payout,
+            'employe' => $employe,
             'rank' => $rank,
+            'date' => $date
         ];
         // dd($data);
         return view('pages.payout')->with('data', $data);

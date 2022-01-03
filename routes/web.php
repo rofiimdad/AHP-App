@@ -55,6 +55,7 @@ Route::post('/addRatioCriteria', [CriteriaController::class, 'storeRatio'])->nam
 Route::get('/deleteRatioCriteria/{v_id}/{h_id}', [RatioCriteriaController::class, 'destroy'])->name('deleteRatioCriteria');
 
 Route::get('/payout', [PayoutController::class, 'index'])->name('payout');
+Route::post('/payout', [PayoutController::class, 'show'])->name('payout');
 Route::post('/addPayout', [PayoutController::class, 'store'])->name('addPayout');
 Route::post('/updatePayout', [PayoutController::class, 'update'])->name('updatePayout');
 Route::get('/deletePayout/{id}', [PayoutController::class, 'destroy'])->name('deletePayout');

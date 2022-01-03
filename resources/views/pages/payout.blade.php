@@ -111,9 +111,10 @@
                     </div>
                     <div class="card-body">
                         <div class="d-flex flex-row-reverse bd-highlight">
-                            <form class="row g-3">
+                            <form class="row g-3" method="POST" action="{{route('payout')}}">
+                                @csrf
                                 <div class="col-auto">
-                                    <input type="month" class="form-control" id="filterPeriode" placeholder="date Month">
+                                    <input type="month" class="form-control" id="filterPeriode" name="date" value="@if($data->date == null){{Carbon\Carbon::now()->format('Y-m')}}@else{{$data->date}}@endif">
                                 </div>
                                 <div class="col-auto">
                                     <button type="submit" class="btn btn-primary mb-3">Filter</button>
