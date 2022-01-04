@@ -92,7 +92,6 @@ class EmployeController extends Controller
                 ]);
         }
 
-        dd($karyawan);
         return redirect()->back()->with(["message" => $request->name]);
     }
 

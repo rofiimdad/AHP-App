@@ -12,7 +12,7 @@ class RatioAlternativeController extends Controller
 {
 
     const IR = array(
-        0.00,
+        0.01,
         0.58,
         0.90,
         1.12,

@@ -9,16 +9,16 @@ use Illuminate\Http\Request;
 class RatioCriteriaController extends Controller
 {
     const IR = array(
-         0.00,
-         0.58,
-         0.90,
-         1.12,
-         1.24,
-         1.32,
-         1.41,
-         );
-    
-    
+        0.01,
+        0.58,
+        0.90,
+        1.12,
+        1.24,
+        1.32,
+        1.41,
+    );
+
+
     /**
      * Display a listing of the resource.
      *
@@ -28,7 +28,6 @@ class RatioCriteriaController extends Controller
     {
         $data = self::generate();
         return view('pages.ratioCriteria')->with('data', $data);
-        
     }
 
     /**
@@ -40,7 +39,8 @@ class RatioCriteriaController extends Controller
      * 
      */
 
-    public static function lamda($arraysumCOl, $arrayEigen){
+    public static function lamda($arraysumCOl, $arrayEigen)
+    {
         $sumCol = $arraysumCOl;
         $avgEigen = array();
         $sumLamda = 0;
@@ -49,11 +49,11 @@ class RatioCriteriaController extends Controller
                 continue;
             }
             $dataQuantity = (count($value) - 1);
-            $avgEigen[$nameCriteria] = $value['totalEigen'] /$dataQuantity ;
+            $avgEigen[$nameCriteria] = $value['totalEigen'] / $dataQuantity;
             $lamda[$nameCriteria] = $avgEigen[$nameCriteria] * $sumCol[$nameCriteria];
-            $sumLamda += $lamda[$nameCriteria]; 
-            $CI =( $sumLamda - $dataQuantity )/ ($dataQuantity - 1);
-            $constant = $CI / self::IR[$dataQuantity-2];
+            $sumLamda += $lamda[$nameCriteria];
+            $CI = ($sumLamda - $dataQuantity) / ($dataQuantity - 1);
+            $constant = $CI / self::IR[$dataQuantity - 2];
         }
 
 
@@ -90,10 +90,10 @@ class RatioCriteriaController extends Controller
     public static function data()
     {
         $data = Ratio_criteria::join('criterias as v_criterias', 'ratio_criterias.v_criteria_id', '=', 'v_criterias.id')
-                                ->join('criterias as h_criterias', 'ratio_criterias.h_criteria_id', '=', 'h_criterias.id')
-                                ->select('ratio_criterias.value', 'v_criterias.name as v_name', 'h_criterias.name as h_name', 'v_criterias.id as v_id', 'h_criterias.id as h_id')
-                                ->orderBy('v_name', 'ASC')->get()->toArray();
-        
+            ->join('criterias as h_criterias', 'ratio_criterias.h_criteria_id', '=', 'h_criterias.id')
+            ->select('ratio_criterias.value', 'v_criterias.name as v_name', 'h_criterias.name as h_name', 'v_criterias.id as v_id', 'h_criterias.id as h_id')
+            ->orderBy('v_name', 'ASC')->get()->toArray();
+
         return $data;
     }
 
@@ -113,41 +113,39 @@ class RatioCriteriaController extends Controller
             $nameColumn = $matrixColumn['name'];
             $sumCol = 0;
             $validate_exist = Ratio_criteria::Where('v_criteria_id', $column)
-                            ->orWhere('h_criteria_id', $column)->count();
-            if($validate_exist < 1){
+                ->orWhere('h_criteria_id', $column)->count();
+            if ($validate_exist < 1) {
                 continue;
             }
-                foreach ($criteria as $matrixRow) {
-                    $row = $matrixRow['id'];
-                    $nameRow = $matrixRow['name'];
-                    $dataRatio = Ratio_criteria::where('v_criteria_id', $column)
-                                                ->where('h_criteria_id', $row);
-                    
-                    if ($column == $row) {
-                        $value = 1;
-                    } else if ($dataRatio->count() == 0) {
-                        continue;
-                    }
+            foreach ($criteria as $matrixRow) {
+                $row = $matrixRow['id'];
+                $nameRow = $matrixRow['name'];
+                $dataRatio = Ratio_criteria::where('v_criteria_id', $column)
+                    ->where('h_criteria_id', $row);
 
-                    if($column != $row){
-                        $value = $dataRatio->select('value')->first();
-                        $value = $value->value;
-                    }
-                    $matrix[$nameRow][$nameColumn] = $value;
+                if ($column == $row) {
+                    $value = 1;
+                } else if ($dataRatio->count() == 0) {
+                    continue;
                 }
 
-            }
-            foreach ($matrix as $columnName => $columnVal ){
-                $devider = self::sumMatrix($columnVal);
-
-                foreach ($columnVal as $valueName => $valueMatrix ) {
-                    $count =  $valueMatrix / (int)$devider ;
-                    $eigen[$columnName][$valueName] =  $count;
+                if ($column != $row) {
+                    $value = $dataRatio->select('value')->first();
+                    $value = $value->value;
                 }
-                $matrix[$columnName] = array_merge($columnVal, array('sumCol' => $devider));
+                $matrix[$nameRow][$nameColumn] = $value;
             }
-            return self::reverseMatrix($matrix);
-        
+        }
+        foreach ($matrix as $columnName => $columnVal) {
+            $devider = self::sumMatrix($columnVal);
+
+            foreach ($columnVal as $valueName => $valueMatrix) {
+                $count =  $valueMatrix / (int)$devider;
+                $eigen[$columnName][$valueName] =  $count;
+            }
+            $matrix[$columnName] = array_merge($columnVal, array('sumCol' => $devider));
+        }
+        return self::reverseMatrix($matrix);
     }
 
     /**
@@ -156,15 +154,15 @@ class RatioCriteriaController extends Controller
      * @param  Array
      * @return Array
      */
-    public static function eigen ($array) :array
+    public static function eigen($array): array
     {
         $data = array();
-        
+
         foreach (self::reverseMatrix($array) as $key => $value) {
             $sumEigen = 0;
             $devieder = $value['sumCol'];
             foreach ($value as $name => $eigenVal) {
-                if($name == 'sumCol'){
+                if ($name == 'sumCol') {
                     continue;
                 }
                 $counted = $eigenVal / $devieder;
@@ -224,18 +222,17 @@ class RatioCriteriaController extends Controller
      * @param  \App\Models\Ratio_criteria  $ratio_criteria
      * @return \Illuminate\Http\Response
      */
-    public function destroy( $v_id, $h_id)
+    public function destroy($v_id, $h_id)
     {
-        
+
         $ratio = Ratio_criteria::where("v_criteria_id", $v_id)
-        ->where("h_criteria_id", $h_id)->first();
+            ->where("h_criteria_id", $h_id)->first();
         $reverseratio = Ratio_criteria::where("v_criteria_id", $h_id)
-        ->where("h_criteria_id", $v_id)->first();
+            ->where("h_criteria_id", $v_id)->first();
 
         $ratio->delete();
         $reverseratio->delete();
 
-        return redirect()->back()->with(["message" => "delet data perbanfdingan " .$ratio->value. " dan " .$reverseratio->value]);
-        
+        return redirect()->back()->with(["message" => "delet data perbanfdingan " . $ratio->value . " dan " . $reverseratio->value]);
     }
 }
