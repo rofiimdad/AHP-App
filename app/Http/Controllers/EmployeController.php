@@ -6,7 +6,9 @@ use App\Models\Criteria;
 use App\Models\Employe;
 use App\Models\Position;
 use App\Models\Ratio_alternative;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class EmployeController extends Controller
 {
@@ -22,7 +24,6 @@ class EmployeController extends Controller
                         ->select('employes.*', 'positions.name as position')->get(),
             'position' => Position::all(),
         ];
-        // dd($data);
 
         return view('pages.employe')->with('data', $data);
     }
@@ -52,6 +53,11 @@ class EmployeController extends Controller
             'date_in' => $request->date,
         ]);
 
+        User::create([
+            'name' => $request->name,
+            'password' => Hash::make('password'),
+        ]);
+
         return redirect()->back()->with('message' , 'Insert Data Criteria Success');
     }
 
@@ -68,9 +74,6 @@ class EmployeController extends Controller
         return redirect()->back()->with('message' , 'Insert Data Karyawan Success');
     }
 
- 
-
-
     /**
      * Update the specified resource in storage.
      *
@@ -80,7 +83,6 @@ class EmployeController extends Controller
      */
     public function update(Request $request)
     {
-        // dd($request->all());
         $karyawan = Employe::find($request->id);
         if($karyawan){
             $karyawan->update([

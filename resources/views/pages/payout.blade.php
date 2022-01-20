@@ -13,7 +13,7 @@
 
         <!-- Content Row -->
         <div class="row">
-        
+
             <div class="col-lg-8 mb-4">
                 <!-- Illustrations -->
                 <div class="card shadow mb-4">
@@ -49,10 +49,10 @@
                                     <td>{{$bonuses['name']}}</td>
                                     <td>{{$bonuses['value']}}</td>
                                     <td>
-                                        <button id="button-edit" class="btn btn-info btn-circle" data-toggle="modal" data-target="#exampleModal" data-modal="">
+                                        <button id="button-edit-bonus" class="btn btn-info btn-circle" data-toggle="modal" data-target="#modalBonus" data-modal="{{json_encode($bonuses)}}">
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
-                                        <a href="" class="btn btn-danger btn-circle" >
+                                        <a href="{{route('deleteBonus',['id' => $bonuses['id']])}}" class="btn btn-danger btn-circle" >
                                             <i class="fas fa-trash"></i>
                                         </a>
                                     </td>
@@ -79,11 +79,11 @@
                                 <th scope="col">Nama</th>
                                 <th scope="col">Poin</th>
                                 <th scope="col">Persentase</th>
-                                
+
                                 </tr>
                             </thead>
                             <tbody>
-                                
+                                {{-- @dd($data->rank) --}}
                                 @foreach ($data->rank as $rank => $value)
                                 @if ($rank == 'totalpoins')
                                     @continue
@@ -92,7 +92,7 @@
                                     <th scope="row">{{$loop->iteration}}</th>
                                     <td >{{$rank}}</td>
                                     <td >{{round($value,3)}}</td>
-                                    <td >{{round(($value/$data->rank['totalpoins']) * 100 ,2)}}</td>
+                                    <td >{{round(($value/$data->rank['totalpoins']) * 100 ,1)}} %</td>
                                 </tr>
                                 @endif
                                 @endforeach
@@ -103,8 +103,8 @@
             </div>
         </div>
         <div class="row">
+            <!-- List -->
             <div class="col-lg-8 mb-4">
-                <!-- List -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">Daftar Gaji</h6>
@@ -164,8 +164,8 @@
 
             </div>
 
+            <!-- Form Tambah Karyawan -->
             <div class="col-lg-4 mb-4">
-                <!-- Form Tambah Karyawan -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">Gaji Karyawan</h6>
@@ -187,7 +187,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="bonusOption">Bonus</label>
-                                    <select class="form-control" id="bonusOption" name="bonus_id" >
+                                    <select class="form-control" id="bonusStatus" name="bonus_id" >
                                         <option value=''>Tidak Menerima Bonus</option>
                                         @foreach ($data->bonus as $bonuses)
                                         <option value="{{$bonuses['id']}}">{{$bonuses['name']}}</option>
@@ -206,6 +206,9 @@
                 </div>
             </div>
         </div>
+
+<!-- /Modal-->
+
 
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -246,12 +249,43 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="modalBonus" tabindex="-1" role="dialog" aria-labelledby="modalBonusLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalBonusLabel">Edit Data Bonus</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST" action="{{ route('updateBonus')}}">
+                    <div class="modal-body">
+                        @csrf
+                        <input id="id-bonus" type="hidden" name="id">
+                        <div class="form-group">
+                            <label for="inputNama">Nama</label>
+                            <input type="text" class="form-control" id="inputNama" name="name">
+                        </div>
+                        <div class="form-group">
+                            <label for="inputAlamat">Gaji Pokok</label>
+                            <input class="form-control" id="inputBonus" rows="3" name="value">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-    <!-- /.container-fluid -->
+</div>
+<!-- /.container-fluid -->
 @endsection
 
 @section('js')
     <script>
+    var rank = {{json_encode($data->rank)}}
     $(document).on("click", "#button-edit", function () {
      var raw = $(this).attr('data-modal');
      var datas = JSON.parse(raw);
@@ -264,6 +298,19 @@
             }
         });
     $(".modal-body #inputGaji").val(datas.value);
+    });
+
+    $(document).on("click", "#button-edit-bonus", function () {
+     var raw = $(this).attr('data-modal');
+     var datas = JSON.parse(raw);
+    $(".modal-body #id-bonus").attr("value", datas.id);
+    $(".modal-body #inputNama").val(datas.name);
+    $(".modal-body #inputBonus").val(datas.value);
+    });
+
+    $('#bonusOption').on('change', function() {
+        var karyawan = $(this).find(":selected").text();
+
     });
   </script>
 @endsection

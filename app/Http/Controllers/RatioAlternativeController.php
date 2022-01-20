@@ -34,7 +34,7 @@ class RatioAlternativeController extends Controller
                                 ->join('employes as v_employes', 'ratio_alternatives.v_alternative_id', '=', 'v_employes.id')
                                 ->join('employes as h_employes', 'ratio_alternatives.h_alternative_id', '=', 'h_employes.id')
                                 ->select('ratio_alternatives.value', 'v_employes.name as v_name', 'h_employes.name as h_name', 'criterias.name as criterias_name' ,'criterias.id as criterias_id' , 'v_employes.id as v_id', 'h_employes.id as h_id')
-                                ->orderBy('v_name', 'ASC')->get()->toArray();
+                                ->get()->toArray();
         $data = (object)[
             'employe' => $employe,
             'criteria' => $criteria,
@@ -81,14 +81,14 @@ class RatioAlternativeController extends Controller
             'v_alternative_id' => $request->h_alternative,
             'value' => (1 / $request->value),
         ]);
-        return redirect()->back()->with('message', 'Input Data Sukses');
+        return redirect()->back()->with('message', 'Input Data Sukses')->withInput();
     }
 
 
 
     /**
      * Display the matrix resource.
-     * 
+     *
      * @return array
      */
     public static function showAlternative()
@@ -143,15 +143,14 @@ class RatioAlternativeController extends Controller
             if ($validate_exist) {
             $altMatrix[$criterias['name']]['ratio'] = RatioCriteriaController::reverseMatrix($matrix);
             $altMatrix[$criterias['name']]['eigen'] = RatioCriteriaController::eigen($altMatrix[$criterias['name']]['ratio']);
-            }    
+            }
         }
-        
+
         foreach ($altMatrix as $criteriaName => $value) {
             $lamda[$criteriaName] = RatioCriteriaController::lamda($value['ratio']['sumCol'], $value['eigen']);
             $altMatrix[$criteriaName]['lamda'] = $lamda[$criteriaName];
         }
 
-        // dd($altMatrix);
         return $altMatrix;
     }
 
@@ -165,11 +164,10 @@ class RatioAlternativeController extends Controller
             ->where("v_alternative_id", $h_id)
             ->where("h_alternative_id", $v_id)->first();
 
-        // dd([$ratio, $reverseratio]);
         $ratio->delete();
         $reverseratio->delete();
 
         return redirect()->back()->with(["message" => "delet data perbanfdingan " . $ratio->value . " dan " . $reverseratio->value]);
     }
-    
+
 }

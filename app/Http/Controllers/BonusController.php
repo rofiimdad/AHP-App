@@ -45,6 +45,7 @@ class BonusController extends Controller
             'name' => $request->name,
             'value' => $request->value,
         ]);
+        return redirect()->back()->with('message', 'Input Data Sukses');
     }
 
     /**
@@ -69,7 +70,17 @@ class BonusController extends Controller
      */
     public function update(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string',
+            'value' => 'required|numeric',
+        ]);
+
+        $bonus = Bonus::find($request->id);
+            $bonus->name = $request->name;
+            $bonus->value = $request->value;
+            $bonus->save();
+
+        return redirect()->back()->with('message', 'Input Data Sukses');
     }
 
     /**

@@ -31,12 +31,12 @@ class RatioCriteriaController extends Controller
     }
 
     /**
-     * 
+     *
      * @param array Matrix Source
      * @param array Matrix Eigen
-     * 
+     *
      * @return array Matrix data array
-     * 
+     *
      */
 
     public static function lamda($arraysumCOl, $arrayEigen)
@@ -64,7 +64,8 @@ class RatioCriteriaController extends Controller
             "rawlamda" => $lamda,
             "sumLamda" => $sumLamda,
             "CI" => $CI,
-            "constant" =>  $constant
+            "constant" =>  $constant,
+            "IR" => self::IR[$dataQuantity - 2]
         ];
     }
 
@@ -100,7 +101,7 @@ class RatioCriteriaController extends Controller
 
     /**
      * Display the matrix resource.
-     * 
+     *
      * @return array
      */
     public static function showCriteria()

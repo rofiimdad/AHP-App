@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCriteriasTable extends Migration
+class CreateResultAHPSTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,11 @@ class CreateCriteriasTable extends Migration
      */
     public function up()
     {
-        Schema::create('criterias', function (Blueprint $table) {
+        Schema::create('result_a_h_p_s', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->date('period');
+            $table->unsignedBigInteger('criteria_id');
+            $table->unsignedFloat('value');
             $table->timestamps();
         });
     }
@@ -27,6 +29,6 @@ class CreateCriteriasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('criterias');
+        Schema::dropIfExists('result_a_h_p_s');
     }
 }

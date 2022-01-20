@@ -15,6 +15,7 @@ class CreateRatioAlternativesTable extends Migration
     {
         Schema::create('ratio_alternatives', function (Blueprint $table) {
             $table->id();
+            $table->date('period');
             $table->unsignedInteger('h_alternative_id');
             $table->unsignedInteger('v_alternative_id');
             $table->unsignedInteger('criteria_id');

@@ -93,7 +93,7 @@
                                             <tr>
                                             <th scope="col">#</th>
                                             <th scope="col">Kriteria 1</th>
-                                            <th scope="col">Kriteria 1</th>
+                                            <th scope="col">Kriteria 2</th>
                                             <th scope="col">Value</th>
                                             <th scope="col">Aksi</th>
                                             </tr>

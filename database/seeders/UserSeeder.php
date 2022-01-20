@@ -18,9 +18,8 @@ class UserSeeder extends Seeder
     {
         DB::table('users')->insert([
             'name' => 'admin',
-            'email' => 'admin@admin.com',
-            'email_verified_at' => Carbon::now(),
             'password' => Hash::make('password'),
+            'is_admin' => 1,
         ]);
     }
 }

@@ -22,10 +22,10 @@ class CriteriaController extends Controller
             'criteria'  => $criteria,
             'ratio'     => $ratio,
         ];
-        
+
         // dd($data);
         return view('pages.criteria')->with('data', $data);
-        
+
     }
 
 
@@ -59,7 +59,7 @@ class CriteriaController extends Controller
 
         if (Ratio_criteria::where('v_criteria_id', $request->v_criteria)
                             ->where('h_criteria_id', $request->h_criteria)
-                            ->count() 
+                            ->count()
         ) {
             return redirect()->back()->with('message', 'Data Sudah Pernah disimpan');
         }
@@ -75,6 +75,33 @@ class CriteriaController extends Controller
                 'v_criteria_id' => $request->h_criteria,
                 'value' => (1 / $request->value),
             ]);
+        return redirect()->back()->with('message', 'Input Data Sukses');
+    }
+
+    public function massUpdate(Request $request)
+    {
+
+        foreach ($request->except(['_token', 'row'])  as $key => $value) {
+            $keyID = Criteria::getIdfromName($key);
+            $rowID = Criteria::getIdfromName($request->row);
+            $value = (int)$value;
+            if($keyID == $rowID){
+                continue;
+            };
+            Ratio_criteria::where([
+                    ['h_criteria_id', '=', $keyID],
+                    ['v_criteria_id', '=', $rowID],
+                ])->update([
+                    'value' => $value,
+                ]);
+            Ratio_criteria::where([
+                    ['h_criteria_id', '=', $rowID],
+                    ['v_criteria_id', '=', $keyID],
+                ])->update([
+                    'value' => (1/$value),
+                ]);
+        }
+
         return redirect()->back()->with('message', 'Input Data Sukses');
     }
 

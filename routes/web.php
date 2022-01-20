@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\BonusController;
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\CriteriaController;
+use App\Http\Controllers\DataCriteriaController;
 use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\PayoutController;
 use App\Http\Controllers\RatioAlternativeController;
@@ -21,10 +23,8 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/',function () {
-        return view('auth')->name('dashboard');
-    });
-    
+    Route::get('/', [Controller::class, 'dashboard'])->name('dashboard');
+
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
@@ -34,7 +34,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/updateKaryawan', [EmployeController::class, 'update'])->name('updateKaryawan');
     Route::post('/inputKaryawan', [EmployeController::class, 'store'])->name('inputKaryawan');
     Route::get('/deleteKaryawan/{employe}', [EmployeController::class, 'destroy'])->name('deleteKaryawan');
-    
+
     Route::get('/ratioAlternative', [RatioAlternativeController::class, 'index'])->name('ratioAlternative');
     Route::post('/addRatioAlternative', [RatioAlternativeController::class, 'store'])->name('addRatioAlternative');
     Route::get('/resultAlternative', function(){
@@ -42,26 +42,36 @@ Route::middleware(['auth'])->group(function () {
         return view('pages.ratioAlternative')->with('data', $data);
     })->name('resultAlternative');
     Route::get('/deleteRatioAlternative/{criterias_id}/{v_id}/{h_id}', [RatioAlternativeController::class, 'destroy'])->name('deleteRatioAlternative');
-    
+
     Route::get('/criteria', [CriteriaController::class, 'index'])->name('criteria');
     Route::post('/addCriteria', [CriteriaController::class, 'store'])->name('addCriteria');
     Route::get('/deleteCriteria/{criteria}', [CriteriaController::class, 'destroy'])->name('deleteCriteria');
-    
+
     Route::get('/ratioCriteria', [RatioCriteriaController::class, 'index'])->name('ratioCriteria');
     Route::post('/addRatioCriteria', [CriteriaController::class, 'storeRatio'])->name('addRatioCriteria');
+    Route::post('/massRatioCriteria', [CriteriaController::class, 'massUpdate'])->name('massRatioCriteria');
     Route::get('/deleteRatioCriteria/{v_id}/{h_id}', [RatioCriteriaController::class, 'destroy'])->name('deleteRatioCriteria');
-    
+
     Route::get('/payout', [PayoutController::class, 'index'])->name('payout');
     Route::post('/payout', [PayoutController::class, 'show'])->name('payout');
     Route::post('/addPayout', [PayoutController::class, 'store'])->name('addPayout');
     Route::post('/updatePayout', [PayoutController::class, 'update'])->name('updatePayout');
     Route::get('/deletePayout/{id}', [PayoutController::class, 'destroy'])->name('deletePayout');
+
     Route::post('/addBonus', [BonusController::class, 'store'])->name('addBonus');
-    
+    Route::post('/updateBonus', [BonusController::class, 'update'])->name('updateBonus');
+    Route::post('/deleteBonus/{id}', [BonusController::class, 'destroy'])->name('deleteBonus');
+
+    Route::get('/criteriaData', [DataCriteriaController::class, 'index'])->name('criteriaData');
+    Route::post('/upsertData', [DataCriteriaController::class, 'store'])->name('upsertData');
+
+    Route::get('/userList', [Controller::class, 'index'])->name('userList');
+    Route::post('/addUser', [Controller::class, 'save'])->name('addUser');
+
     Route::get('/print/{date}/{id}', function ($date, $id) {
         $data = App\Models\Payout::whereYear('period',  date("Y", strtotime($date)))
         ->whereMonth('period', date("m", strtotime($date)))
-        ->where('payouts.id', $id)
+        ->where('payouts.employe_id', $id)
         ->leftjoin('bonuses', 'bonuses.id', 'bonus_id')
         ->join('employes', 'employes.id', 'employe_id')
         ->leftjoin('positions', 'positions.id', 'employes.position_id')
@@ -71,7 +81,6 @@ Route::middleware(['auth'])->group(function () {
         return view('layouts.print')->with('data', $data);
     })->name('print');
 });
-    
-    
+
+
     require __DIR__.'/auth.php';
-    

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 
@@ -39,11 +40,11 @@
 }
 
 @media print {
-   thead {display: table-header-group;} 
+   thead {display: table-header-group;}
    tfoot {display: table-footer-group;}
-   
+
    button {display: none;}
-   
+
    body {margin: 0;}
 }
   </style>
@@ -66,7 +67,7 @@
   <table>
 
     <thead>
-      
+
         <tr>
         <td>
           <!--place holder for the fixed-position header-->
@@ -90,7 +91,7 @@
                     <thead>
                     <tr>
                         <th>Periode Gaji</th>
-                        <th colspan="3">{{$data['period']}}</th>
+                        <th colspan="3">{{$data->period}}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -115,7 +116,7 @@
                         <td colspan="2">Gaji Pokok</td>
                         <td style="text-align: right">{{$data->value}}</td>
                     </tr>
-                    @if ($data->bonus_value == null) 
+                    @if ($data->bonus_value == null)
                     <tr>
                         <td>2</td>
                         <td colspan="2">Bonus</td>
@@ -126,7 +127,7 @@
                         <td style="text-align: right">{{$data->value}}</td>
                     </tr>
                     @else
-                        
+
                     <tr>
                         <td>2</td>
                         <td colspan="2">Bonus</td>

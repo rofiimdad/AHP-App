@@ -15,7 +15,7 @@
                             <!-- Form Tambah Karyawan -->
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Tambah Karyawan</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary">Perbandingan Karyawan</h6>
                                 </div>
                                 <div class="card-body">
                                 <form method="POST" action="{{ route('addRatioAlternative') }}">
@@ -24,7 +24,7 @@
                                         <label for="criteria">Kriteria</label>
                                         <select class="form-control" id="citeria" name="criteria">
                                             @foreach ($data->criteria as $criterias)
-                                            <option value="{{$criterias['id']}}">{{$criterias['name']}}</option>
+                                            <option value="{{$criterias['id']}}" {{ (old("criteria") == $criterias['id'] ? "selected":"") }}>{{$criterias['name']}}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -69,7 +69,7 @@
                                         <!-- Card Content - Collapse -->
                                         <div class="collapse" id="collapseCard{{$criterias['id']}}" style="">
                                             <div class="card-body">
-                                                <table class="table">
+                                                <table class="table table-striped">
                                                     <thead>
                                                         <tr>
                                                         <th scope="col">#</th>
@@ -80,7 +80,6 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {{-- @dd($data->ratio) --}}
                                                         @php
                                                             $counter = 0;
                                                         @endphp

@@ -29,7 +29,8 @@
                                                 <th class="text-center" scope="col">{{ $key;  }}</th>
                                                 @endif
                                                 @endforeach
-                                                
+                                                <th class="text-center" scope="col">Edit</th>
+
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -40,9 +41,15 @@
                                                     @else
                                                     <th scope="col">Jumlah
                                                 @endif
-                                                @foreach ($prop as $key => $props)
+                                                @foreach ($prop as $keys => $props)
                                                         <td class="text-center" >{{  $props; }}</td>
-                                                @endforeach 
+                                                          @if($key != 'sumCol' and $loop->last)
+                                                            <td  class="text-center">
+                                                            <button type="button" class="btn btn-warning btn-circle" data-toggle="modal" data-target="#exampleModal" data-whatever="{{json_encode($prop)}}" data-title="{{$keys}}">
+                                                                <i class="fas fa-pen"></i></button>
+                                                            </td>
+                                                         @endif
+                                                @endforeach
                                             </th>
                                             </tr>
                                         @endforeach
@@ -65,7 +72,7 @@
                                                 <tr>
                                                     <th scope="col">#</th>
                                                 @foreach ($value['eigen'] as $key => $props)
-                                                
+
                                                 @if ($key == 'sumEigen')
                                                 <th class="text-center" scope="col">Tot. Eigen</th>
                                                 <th class="text-center" scope="col">Avg. Eigen</th>
@@ -73,7 +80,7 @@
                                                 <th class="text-center" scope="col">{{ $key;  }}</th>
                                                 @endif
                                                 @endforeach
-                                                
+
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -91,7 +98,7 @@
                                                         @else
                                                         <td class="text-center" >{{  round($props, 2); }}</td>
                                                         @endif
-                                                        @endforeach 
+                                                        @endforeach
                                                     </th>
                                             </tr>
                                             @endforeach
@@ -100,8 +107,16 @@
                                                 <td class="text-right" colspan='2'>{{ round($value['lamda']['sumLamda'], 4);}}</td>
                                             </tr>
                                             <tr class="text-center">
+                                                <td colspan='4'>IR Variable</td>
+                                                <td class="text-right" colspan='2'>{{round($value['lamda']['IR'], 2)}}</td>
+                                            </tr>
+                                            <tr class="text-center">
                                                 <td colspan='4'>Consistency Index</td>
                                                 <td class="text-right" colspan='2'>{{ round($value['lamda']['CI'], 4);}}</td>
+                                            </tr>
+                                            <tr class="text-center">
+                                                <td colspan='4'>Consistency Ratio = CI / IR</td>
+                                                <td class="text-right" colspan='2'>{{ round($value['lamda']['constant'], 4);}}</td>
                                             </tr>
                                             <tr class="text-center">
                                                 <td colspan='4'>Consistency Status</td>
@@ -126,4 +141,59 @@
                     @endforeach
                 </div>
                 <!-- /.container-fluid -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">message</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    <form action="{{route('massRatioCriteria')}}" method="POST">
+                        @csrf
+                        <div class="modal-body">
+                            <input id="_rowCriteria" type="text" name="row" hidden>
+                            @foreach ($value['ratio'] as $key => $value )
+                            @if ($key == 'sumCol')
+                                @continue
+                            @endif
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Nilai terhadap : {{$key}}</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="{{$key}}">
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            </div>
+@endsection
+
+@section('js')
+<script>
+$('#exampleModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var datas = button.data('whatever') // Extract info from data-* attributes
+  var title = button.data('title') // Extract info from data-* attributes
+
+  var modal = $(this)
+  modal.find('.modal-title').text('Edit row Data = ' + title)
+  modal.find('#_rowCriteria').val(title)
+  $.each(datas, function (indexInArray, valueOfElement) {
+      modal.find('.modal-body input[name="'+ indexInArray + '"]').val(valueOfElement)
+      if(valueOfElement == 1){
+          modal.find('.modal-body input[name="'+ indexInArray + '"]').attr('readonly', true)
+      }
+  });
+})
+
+
+</script>
+
+
 @endsection

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Criteria extends Model
+class Data_criteria extends Model
 {
     use HasFactory;
 
@@ -15,11 +15,8 @@ class Criteria extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'employe_id',
+        'criteria_id',
+        'value',
     ];
-
-    public static function getIdfromName($name){
-        $data = Criteria::where('name', '=', $name)->first();
-        return $data->id;
-    }
 }

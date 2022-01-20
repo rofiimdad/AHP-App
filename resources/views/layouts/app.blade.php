@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Dashboard</title>
+    <title>AHP sistem</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -86,7 +86,7 @@
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; MEGAKUMALA 2022</span>
+                        <span>Copyright &copy; Dolopo Grosir 2022</span>
                     </div>
                 </div>
             </footer>
@@ -135,13 +135,13 @@
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
+    @if (session()->has('message'))
     <script>
         $(function(){
-            @if (session()->has('message'))
                 alert("{{ session()->get("message") }}");
-            @endif
         });
     </script>
+    @endif
 
     @yield('js')
 </body>
