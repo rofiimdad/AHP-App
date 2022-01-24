@@ -1,157 +1,68 @@
+@extends('layouts.guest')
 
-<!DOCTYPE html>
-<html>
+@section('content')
+            <!-- Main Content -->
+            <div id="content">
 
-<head>
-  <style>
-      /* Styles go here */
+                <br>
+                <h1 class="text-center">Report Gaji</h1>
+                <h3 class="text-center">Periode : {{$data->date}} </h3>
+                <br>
+                <hr>
+                <br>
 
-.page-header, .page-header-space {
-  height: 100px;
-}
-
-.page-footer, .page-footer-space {
-  height: 50px;
-
-}
-
-.page-footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  border-top: 1px solid black; /* for demo */
-  background: yellow; /* for demo */
-}
-
-.page-header {
-  position: fixed;
-  top: 0mm;
-  width: 100%;
-  border-bottom: 1px solid black; /* for demo */
-  background: yellow; /* for demo */
-}
-
-.page {
-  page-break-after: always;
-}
-
-@page {
-  margin: 20mm
-}
-
-@media print {
-   thead {display: table-header-group;}
-   tfoot {display: table-footer-group;}
-
-   button {display: none;}
-
-   body {margin: 0;}
-}
-  </style>
-</head>
-
-<body>
-
-  <div class="page-header" style="text-align: center">
-    CV. DOLOPO Grosir
-    <br/>
-    <button type="button" onClick="window.print()" style="background: pink">
-      PRINT!
-    </button>
-  </div>
-
-  <div class="page-footer">
-    Jalan Madiun-Ponorogo Dolopo Madiun
-  </div>
-
-  <table>
-
-    <thead>
-
-        <tr>
-        <td>
-          <!--place holder for the fixed-position header-->
-          <div class="page-header-space"></div>
-        </td>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr>
-        <td>
-          <!--*** CONTENT GOES HERE ***-->
-            <div class="page" style="line-height: 3;">
-                <table style="undefined;table-layout: fixed; width: 537px" border="1">
-                    <colgroup>
-                    <col style="width: 100px">
-                    <col style="width: 94px">
-                    <col style="width: 97px">
-                    <col style="width: 246px">
-                    </colgroup>
-                    <thead>
+                <table class="table table-bordered">
+                    <h4 class="text-center">Rekap Gaji Karyawan</h4>
+                <thead>
                     <tr>
-                        <th>Periode Gaji</th>
-                        <th colspan="3">{{$data->period}}</th>
+                    <th scope="col">No</th>
+                    <th scope="col">Nama</th>
+                    <th scope="col">Jabatan</th>
+                    <th scope="col">Gaji Pokok</th>
+                    <th scope="col">Bonus</th>
+                    <th scope="col">Total</th>
                     </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>Nama</td>
-                        <td colspan="3">{{$data->name}}</td>
-                    </tr>
-                    <tr>
-                        <td>Alamat</td>
-                        <td colspan="3">{{$data->address}}</td>
-                    </tr>
-                    <tr>
-                        <td>Jabatan</td>
-                        <td colspan="3">{{$data->position}}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3">Detail</td>
-                        <td>Nominal</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td colspan="2">Gaji Pokok</td>
-                        <td style="text-align: right">{{$data->value}}</td>
-                    </tr>
-                    @if ($data->bonus_value == null)
-                    <tr>
-                        <td>2</td>
-                        <td colspan="2">Bonus</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3">Total</td>
-                        <td style="text-align: right">{{$data->value}}</td>
-                    </tr>
-                    @else
+                </thead>
+                <tbody>
 
-                    <tr>
-                        <td>2</td>
-                        <td colspan="2">Bonus</td>
-                        <td style="text-align: right">{{$data->bonus_value}}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3">Total</td>
-                        <td style="text-align: right">{{$data->value + $data->bonus_value}}</td>
-                    </tr>
-                    @endif
+                    @foreach ($data->employe as $employeData)
+                        <tr>
+                            <th>{{$loop->iteration}}</th>
+                            <td>{{$employeData->name}}</td>
+                            <td>{{$employeData->position}}</td>
+                            <td>{{$employeData->value}}</td>
+                            <td>{{$employeData->bonus_value == null ?  '-' : $employeData->value}}</td>
+                            <td>{{$employeData->value + $employeData->bonus_value }}</td>
+                        </tr>
+                    @endforeach
                 </tbody>
-            </table>
-        </div>
-    <tfoot>
-      <tr>
-        <td>
-          <!--place holder for the fixed-position footer-->
-          <div class="page-footer-space"></div>
-        </td>
-      </tr>
-    </tfoot>
+                </table>
+                <br>
+                <hr>
+                <br>
+                <table class="table table-bordered">
+                    <h4 class="text-center">Penilaian Karyawan</h4>
+                    @foreach ($data->eigen as $criteriaName => $value)
+                     <tr>
+                         @if ($loop->first)
+                         <th>Nama</th>
+                         @endif
+                         <th class="text-center">{{$criteriaName}}</th>
+                     </tr>
+                     @foreach ($value['eigen'] as $keyName => $prop)
+                     <tr>
+                         @if ($keyName != 'sumEigen')
+                         <th scope="col">{{ $keyName; }}</th>
+                            @foreach ($prop as $key => $props)
+                            @if ($key == 'totalEigen')
+                            <td class="text-center" >{{  round( $props / $value['eigen']['sumEigen']['totalEigen'], 3); }}</td>
+                            @endif
+                            @endforeach
 
-  </table>
-
-</body>
-
-</html>
+                            @endif
+                        </tr>
+                        @endforeach
+                    @endforeach
+                </tbody>
+                </table>
+@endsection

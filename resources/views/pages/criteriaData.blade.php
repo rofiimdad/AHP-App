@@ -53,77 +53,64 @@
                                 <div class="card-body">
                                     <table class="table">
                                         <thead>
-                                            <th>#</th>
-                                         @foreach ($data['criteria'] as $key => $value)
+                                            <th>No</th>
+                                            <th>Nama</th>
+                                            @foreach ($data['criteria'] as $key => $value)
                                                 <th>{{$value["name"]}}</th>
-                                        @endforeach
-                                    </thead>
+                                            @endforeach
+                                            <th>Aksi</th>
+                                        </thead>
                                         <tbody>
-                                            @foreach ($data['listData'] as $key => $prop)
+                                            @foreach ($data['listData'] as $name => $prop)
                                             <tr>
-                                                   <th>{{$key}}</th>
-                                                @foreach ($data['criteria'] as $keys => $values)
+                                                    <td>{{$loop->iteration}}</td>
+                                                    <th>{{$name}}</th>
+                                                    @foreach ($data['criteria'] as $keys => $values)
                                                         @foreach ($prop as $key => $value)
+                                                        {{-- @dd($prop) --}}
                                                         @if ($values["name"] == $key)
                                                         @if ($loop->first)
                                                             <td class="text-left">Rp. {{$value}}</td>
                                                             @else
-                                                                <td>{{$value}}</td>
+                                                            <td>{{$value}}</td>
                                                         @endif
                                                         @endif
                                                         @endforeach
-                                                @endforeach
+                                                        @endforeach
+                                                        <td>
+                                                            <a href="{{route('deleteData', ['id' => $prop['karyawan_id'] ])}}" class="btn btn-danger btn-circle" >
+                                                                <i class="fas fa-trash"></i>
+                                                            </a>
+                                                        </td>
                                             </tr>
                                            @endforeach
                                         </tbody>
-                                        </table>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModal" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Edit Data Karyawan</h5>
+                                <h5 class="modal-title" id="editModal">Edit Data Kriteria</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <form method="POST" action="{{ route('updateKaryawan') }}">
-                                <div class="modal-body">
-                                    @csrf
-                                    <input id="id-karyawan" type="hidden" name="id">
-                                    <div class="form-group">
-                                        <label for="inputNama">Nama</label>
-                                        <input type="text" class="form-control" id="inputNama" name="name">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="inputJabatan">Jabatan</label>
-                                        <select class="form-control" id="inputJabatan" name="position">
-
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="inputGender">Gender</label>
-                                        <select class="form-control" id="inputGender" name="gender">
-                                            <option value="Laki-Laki">Laki-Laki</option>
-                                            <option>Perempuan</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="inputAlamat">Alamat</label>
-                                        <textarea class="form-control" id="inputAlamat" rows="3" name="address"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="Date">Tanggal Masuk</label>
-                                        <input type="date" class="form-control" id="inputTanggal" name="date">
-                                    </div>
+                            <form action="{{route('upsertData')}}" method="POST">
+                                @csrf
+                                <input type="text" id="id" name="employe_id" hidden>
+                                @foreach ($data['criteria'] as $key => $value)
+                                <div class="form-group">
+                                    <label for="">Nilai {{$value["name"]}} : </label>
+                                    <input type="text" class="form-control" placeholder="Masukan Nilai" name="{{$value["id"]}}" required>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                                    <button type="submit" class="btn btn-primary">Update</button>
+                                @endforeach
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">Simpan</button>
                                 </div>
                             </form>
                             </div>
@@ -140,7 +127,7 @@
      var raw = $(this).attr('data-modal');
      var datas = JSON.parse(raw);
         console.log(datas);
-    $(".modal-body #id-karyawan").attr("value", datas.id);
+    $(".modal-body #id").attr("value", datas.id);
     $(".modal-body #inputNama").val(datas.name);
     $(".modal-body #inputJabatan").find("option").each(function(){
             if ($(this).text() == datas.position){

@@ -21,4 +21,11 @@ class Employe extends Model
         'gender',
         'date_in'
     ];
+
+    public static function getIdfromName($name)
+    {
+        
+        $data = Employe::where('name', '=', $name)->first();
+        return $data->id;
+    }
 }

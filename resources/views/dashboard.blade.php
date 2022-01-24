@@ -55,14 +55,89 @@
                                 </div>
                             </div>
                             @endforeach
-                                <div class="col-lg-12 mb-4">
+                                {{-- <div class="col-lg-12 mb-4">
                                     <div class="card bg-info text-white shadow">
                                         <div class="card-body">
                                             Total Penilaian dari semua kriteria anda :
                                             <div class="text-white-50 small">{{ round($data->rank * 100 , 2)}} Poins</div>
                                         </div>
                                     </div>
+                                </div> --}}
+
+                                <div class="col-lg-4 mb-4">
+                                    <!-- Illustrations -->
+                                    <div class="card shadow mb-4">
+                                        <div class="card-header py-3">
+                                            <h6 class="m-0 font-weight-bold text-primary">Hasil Perhitungan AHP</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                    <th scope="col">Rank</th>
+                                                    <th scope="col">Nama</th>
+                                                    <th scope="col">Poin</th>
+                                                    <th scope="col">Persentase</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {{-- @dd($data->rank) --}}
+                                                    @foreach ($data->rank as $rank => $value)
+                                                    @if ($rank == 'totalpoins')
+                                                        @continue
+                                                    @else
+                                                    <tr>
+                                                        <th scope="row">{{$loop->iteration}}</th>
+                                                        <td >{{$rank}}</td>
+                                                        <td >{{round($value,3)}}</td>
+                                                        <td >{{round(($value/$data->rank['totalpoins']) * 100 ,1)}} %</td>
+                                                    </tr>
+                                                    @endif
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
+                                <div class="col-lg-6 mb-6">
+                                    <!-- Illustrations -->
+                                    <div class="card shadow mb-4">
+                                        <div class="card-header py-3">
+                                            <h6 class="m-0 font-weight-bold text-primary">Rekap Penerimaan Gaji</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col">Tanggal</th>
+                                                    <th scope="col">Gaji Pokok</th>
+                                                    <th scope="col">Bonus</th>
+                                                    <th scope="col">Total</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {{-- @dd($data->rank) --}}
+                                                    @foreach ($data->payout as $payouts)
+                                                    <tr>
+                                                        <td>{{$loop->iteration}}</td>
+                                                        <td>{{$payouts['period']}}</td>
+                                                        <td>{{$payouts['value']}}</td>
+                                                        @if ($payouts['bonus_value'] == null)
+                                                        <td>-</td>
+                                                        @else
+                                                        <td>{{$payouts['bonus_value']}}</td>
+                                                        @endif
+                                                        <td>{{$payouts['bonus_value'] + $payouts['value']}}</td>
+                                                    </tr>
+                                                    @endforeach
+                                                    </tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 @else
                                 <div class="col-lg-12 mb-4">
                                     <div class="card bg-danger text-white shadow">

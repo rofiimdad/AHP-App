@@ -111,13 +111,16 @@
                     </div>
                     <div class="card-body">
                         <div class="d-flex flex-row-reverse bd-highlight">
-                            <form class="row g-3" method="POST" action="{{route('payout')}}">
+                            <form class="row g-3" method="GET" action="{{route('filterpayout')}}">
                                 @csrf
                                 <div class="col-auto">
                                     <input type="month" class="form-control" id="filterPeriode" name="date" value="@if($data->date == null){{Carbon\Carbon::now()->format('Y-m')}}@else{{$data->date}}@endif">
                                 </div>
                                 <div class="col-auto">
                                     <button type="submit" class="btn btn-primary mb-3">Filter</button>
+                                </div>
+                                <div class="col-auto">
+                                    <a href="{{route('print', ['date' => $data->date !== null ? $data->date : Carbon\Carbon::now()->format('Y-m')])}}" id="print" class="btn btn-info mb-3">Print Report</a>
                                 </div>
                             </form>
                         </div>
@@ -129,7 +132,7 @@
                                     <th scope="col">Jabatan</th>
                                     <th scope="col">Gaji</th>
                                     <th scope="col">Bonus</th>
-                                    <th scope="col">Aksi</th>
+                                    <th class="text-center" scope="col">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -144,10 +147,7 @@
                                     @else
                                     <td>{{$payouts['bonus_name']}}</td>
                                     @endif
-                                    <td>
-                                        <a target="_blank" href="{{route('print', ['id' => $payouts['id'], 'date' => $payouts['period']])}}" class="btn btn-success btn-circle" >
-                                            <i class="fas fa-print"></i>
-                                        </a>
+                                    <td class="text-center">
                                         <button id="button-edit" class="btn btn-info btn-circle" data-toggle="modal" data-target="#exampleModal" data-modal="{{json_encode($payouts)}}">
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
@@ -225,7 +225,7 @@
                         <input id="id-gaji" type="hidden" name="id">
                         <div class="form-group">
                             <label for="inputNama">Nama</label>
-                            <input type="text" class="form-control" id="inputNama" name="name" readonly>
+                            <input type="text" class="form-control" id="inputNamaBonus" name="name" readonly>
                         </div>
                         <div class="form-group">
                             <label for="bonusOption">Bonus</label>
@@ -267,7 +267,7 @@
                             <input type="text" class="form-control" id="inputNama" name="name">
                         </div>
                         <div class="form-group">
-                            <label for="inputAlamat">Gaji Pokok</label>
+                            <label for="inputAlamat">Bonus</label>
                             <input class="form-control" id="inputBonus" rows="3" name="value">
                         </div>
                     </div>
@@ -285,13 +285,12 @@
 
 @section('js')
     <script>
-    var rank = {{json_encode($data->rank)}}
     $(document).on("click", "#button-edit", function () {
      var raw = $(this).attr('data-modal');
      var datas = JSON.parse(raw);
         console.log(datas);
     $(".modal-body #id-gaji").attr("value", datas.id);
-    $(".modal-body #inputNama").val(datas.name);
+    $(".modal-body #inputNamaBonus").val(datas.name);
     $(".modal-body #bonusOption").find("option").each(function(){
             if ($(this).text() == datas.bonus_name){
                 $(this).attr("selected","selected");

@@ -16,12 +16,16 @@ class CriteriaController extends Controller
      */
     public function index()
     {
-        $criteria = Criteria::all()->toArray();
-        $ratio    = RatioCriteriaController::data();
-        $data = (object)[
-            'criteria'  => $criteria,
-            'ratio'     => $ratio,
-        ];
+        try {
+            $criteria = Criteria::all()->toArray();
+            $ratio    = RatioCriteriaController::data();
+            $data = (object)[
+                'criteria'  => $criteria,
+                'ratio'     => $ratio,
+            ];
+        } catch (\Throwable $th) {
+            $data = null;
+        }
 
         // dd($data);
         return view('pages.criteria')->with('data', $data);
@@ -84,7 +88,6 @@ class CriteriaController extends Controller
         foreach ($request->except(['_token', 'row'])  as $key => $value) {
             $keyID = Criteria::getIdfromName($key);
             $rowID = Criteria::getIdfromName($request->row);
-            $value = (int)$value;
             if($keyID == $rowID){
                 continue;
             };

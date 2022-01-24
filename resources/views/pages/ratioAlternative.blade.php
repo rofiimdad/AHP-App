@@ -45,7 +45,7 @@
                                                         <td class="text-center" >{{  $props; }}</td>
                                                           @if($key != 'sumCol' and $loop->last)
                                                             <td  class="text-center">
-                                                            <button type="button" class="btn btn-warning btn-circle" data-toggle="modal" data-target="#exampleModal" data-whatever="{{json_encode($prop)}}" data-title="{{$keys}}">
+                                                            <button type="button" class="btn btn-warning btn-circle" data-toggle="modal" data-modal="{{$criteria}}" data-target="#exampleModal" data-whatever="{{json_encode($prop)}}" data-title="{{$key}}">
                                                                 <i class="fas fa-pen"></i></button>
                                                             </td>
                                                          @endif
@@ -145,15 +145,16 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">message</h5>
+                            <h5 class="modal-title" id="exampleModalLabel">Update Kriteria </h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                    <form action="{{route('massRatioCriteria')}}" method="POST">
+                    <form action="{{route('massRatioAlternative')}}" method="POST">
                         @csrf
                         <div class="modal-body">
-                            <input id="_rowCriteria" type="text" name="row" hidden>
+                            <input id="_rowCriteria" type="text" name="criteria" hidden>
+                            <input id="_rowAlternative" type="text" name="alternative" hidden>
                             @foreach ($value['ratio'] as $key => $value )
                             @if ($key == 'sumCol')
                                 @continue
@@ -180,14 +181,16 @@ $('#exampleModal').on('show.bs.modal', function (event) {
   var button = $(event.relatedTarget) // Button that triggered the modal
   var datas = button.data('whatever') // Extract info from data-* attributes
   var title = button.data('title') // Extract info from data-* attributes
+  var modal = button.data('modal') // Extract info from data-* attributes
 
-  var modal = $(this)
-  modal.find('.modal-title').text('Edit row Data = ' + title)
-  modal.find('#_rowCriteria').val(title)
+  var viewModal = $(this)
+  viewModal.find('.modal-title').text('Edit row Data = ' + title + 'Kriteria ' + modal)
+  viewModal.find('#_rowCriteria').val(modal)
+  viewModal.find('#_rowAlternative').val(title)
   $.each(datas, function (indexInArray, valueOfElement) {
-      modal.find('.modal-body input[name="'+ indexInArray + '"]').val(valueOfElement)
+      viewModal.find('.modal-body input[name="'+ indexInArray + '"]').val(valueOfElement)
       if(valueOfElement == 1){
-          modal.find('.modal-body input[name="'+ indexInArray + '"]').attr('readonly', true)
+          viewModal.find('.modal-body input[name="'+ indexInArray + '"]').attr('readonly', true)
       }
   });
 })

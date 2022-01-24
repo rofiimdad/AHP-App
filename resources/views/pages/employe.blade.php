@@ -82,7 +82,7 @@
                                         <label for="inputGender">Gender</label>
                                         <select class="form-control" id="inputGender" name="gender">
                                             <option value="Laki-Laki">Laki-Laki</option>
-                                            <option>Perempuan</option>
+                                            <option value="Perempuan">Perempuan</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -155,7 +155,6 @@
                     </div>
                 </div>
                 <!-- /.container-fluid -->
-
 @endsection
 
 @section('js')

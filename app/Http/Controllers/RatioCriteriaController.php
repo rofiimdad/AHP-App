@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Criteria;
+use App\Models\Employe;
 use App\Models\Ratio_criteria;
 use Illuminate\Http\Request;
 
@@ -26,7 +27,13 @@ class RatioCriteriaController extends Controller
      */
     public function index()
     {
-        $data = self::generate();
+        try {
+            $data = self::generate();
+
+        } catch (\Throwable $th) {
+            return redirect('criteria')->with(['message' => "data belum lengkap"]);
+            $data = null;
+        }
         return view('pages.ratioCriteria')->with('data', $data);
     }
 
@@ -216,6 +223,8 @@ class RatioCriteriaController extends Controller
 
         return $newArray;
     }
+
+
 
     /**
      * Remove the specified resource from storage.

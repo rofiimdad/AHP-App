@@ -182,11 +182,13 @@ $('#exampleModal').on('show.bs.modal', function (event) {
   var modal = $(this)
   modal.find('.modal-title').text('Edit row Data = ' + title)
   modal.find('#_rowCriteria').val(title)
+  modal.find('.modal-body input').attr('readonly', false)
   $.each(datas, function (indexInArray, valueOfElement) {
       modal.find('.modal-body input[name="'+ indexInArray + '"]').val(valueOfElement)
       if(valueOfElement == 1){
           modal.find('.modal-body input[name="'+ indexInArray + '"]').attr('readonly', true)
       }
+
   });
 })
 

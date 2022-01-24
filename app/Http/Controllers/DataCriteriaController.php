@@ -21,12 +21,13 @@ class DataCriteriaController extends Controller
         $criteria = Criteria::all()->toArray();
         $data_criteria = Data_criteria::leftJoin('employes', 'employes.id', '=', 'data_criterias.employe_id')
                                         ->leftJoin('criterias', 'criterias.id', '=', 'data_criterias.criteria_id')
-                                        ->select('data_criterias.*' , 'employes.name as karyawan' , 'criterias.name as kriteria')->get();
+                                        ->select('data_criterias.*' , 'employes.name as karyawan','employes.id as karyawan_id', 'criterias.name as kriteria')->get();
         $listData = array();
         foreach ($data_criteria as $key => $value) {
             $nama = $value['karyawan'];
             $kriteria = $value['kriteria'];
             $listData[$nama][$kriteria] = $value['value'];
+            $listData[$nama]['karyawan_id'] = $value['karyawan_id'];
         };
         // dd($listData);
         $data = [
@@ -58,6 +59,14 @@ class DataCriteriaController extends Controller
         };
 
         return redirect()->back()->with('message', 'Input Data Sukses');
+    }
+
+    public function destroy( $id)
+    {
+
+        Data_criteria::where('employe_id', $id)->delete();
+
+        return redirect()->back()->with('message', 'Delete Data Sukses');
     }
 
 }

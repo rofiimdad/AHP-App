@@ -23,16 +23,16 @@ class PayoutController extends Controller
             ->leftjoin('bonuses' , 'bonuses.id', 'bonus_id' )
             ->join('employes' , 'employes.id', 'employe_id' )
             ->leftjoin('positions', 'positions.id', 'employes.position_id')
-            ->select('payouts.*', 'employes.*', 'bonuses.name as bonus_name', 'bonuses.value as bonus_value', 'positions.name as position')
+            ->select('payouts.*', 'employes.name as name', 'bonuses.name as bonus_name', 'bonuses.value as bonus_value', 'positions.name as position')
             ->get()->toArray();
-        
+
         $bonus = Bonus::all()->toArray();
         $employe = Employe::all()->toArray();
         $data = (object)[
             'bonus' => $bonus,
             'payout' => $payout,
             'employe' => $employe,
-            'rank' => $rank, 
+            'rank' => $rank,
             'date' => null
         ];
         // dd($data);
@@ -48,7 +48,7 @@ class PayoutController extends Controller
     {
         $date = $request->date;
         $month = date("m", strtotime($date));
-        $Year = date("Y", strtotime($date)); 
+        $Year = date("Y", strtotime($date));
 
         $rank = RankController::show();
         $payout = Payout::whereYear('period',  $Year)
@@ -56,9 +56,9 @@ class PayoutController extends Controller
             ->leftjoin('bonuses' , 'bonuses.id', 'bonus_id' )
             ->join('employes' , 'employes.id', 'employe_id' )
             ->leftjoin('positions', 'positions.id', 'employes.position_id')
-            ->select('payouts.*', 'employes.*', 'bonuses.name as bonus_name', 'bonuses.value as bonus_value', 'positions.name as position')
+            ->select('payouts.*', 'employes.name as name', 'bonuses.name as bonus_name', 'bonuses.value as bonus_value', 'positions.name as position')
             ->get()->toArray();
-        
+
         $bonus = Bonus::all()->toArray();
         $employe = Employe::all()->toArray();
         $data = (object)[
@@ -79,7 +79,7 @@ class PayoutController extends Controller
      */
     public function create()
     {
-        
+
     }
 
     /**
@@ -119,7 +119,7 @@ class PayoutController extends Controller
         if($data->count() < 1){
             return redirect()->back()->with(["message" => "Data Bermasalah"]);
         }
-        
+
         $data->value = $request->value;
         $data->bonus_id = $request->bonus;
         $data->update();
@@ -140,6 +140,6 @@ class PayoutController extends Controller
         $payout = Payout::where('id', $id)->first();
         $payout->delete();
         return redirect()->back()->with(["message" => "Delete Data sukses"]);
-        
+
     }
 }

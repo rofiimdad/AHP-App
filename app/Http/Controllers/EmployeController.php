@@ -53,10 +53,10 @@ class EmployeController extends Controller
             'date_in' => $request->date,
         ]);
 
-        User::create([
-            'name' => $request->name,
-            'password' => Hash::make('password'),
-        ]);
+        // User::create([
+        //     'name' => $request->name,
+        //     'password' => Hash::make('password'),
+        // ]);
 
         return redirect()->back()->with('message' , 'Insert Data Criteria Success');
     }

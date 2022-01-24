@@ -82,7 +82,7 @@
                                                 <button id="button-edit" class="btn btn-info btn-circle" data-toggle="modal" data-target="#exampleModal" data-modal="{{$users->name}}">
                                                     <i class="fas fa-pencil-alt"></i>
                                                 </button>
-                                                <a href="{{route('deleteKaryawan', ['employe' => $users->id ])}}" class="btn btn-danger btn-circle" >
+                                                <a href="{{route('deleteUser', ['id' => $users->id ])}}" class="btn btn-danger btn-circle" >
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                                 </td>
@@ -115,19 +115,15 @@
                                         <input type="text" class="form-control" id="inputNama" name="name">
                                     </div>
                                     <div class="form-group">
-                                        <label for="inputPassword">Change Password</label>
-                                        <input  type="password" class="form-control" id="inputPassword" placeholder="Password" name="password">
+                                        <label for="Password">Change Password</label>
+                                        <input  type="password" class="form-control" id="Password" placeholder="Password" name="password">
                                     </div>
                                     <div class="form-group">
-                                        <label for="inputGender">Role Admin</label>
-                                        <select class="form-control" id="inputGender" name="role">
-                                            <option value='false' >Tidak</option>
-                                            <option value='true' >Ya</option>
+                                        <label for="inputRole">Role Admin</label>
+                                        <select class="form-control" id="inputRole" name="role">
+                                            <option value=false >Tidak</option>
+                                            <option value=true >Ya</option>
                                         </select>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <button type="submit" class="btn btn-primary">Create User</button>
                                     </div>
                                 </div>
                                 <div class="modal-footer">

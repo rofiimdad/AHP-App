@@ -91,7 +91,7 @@ class BonusController extends Controller
      */
     public function destroy($id)
     {
-        $bonus = Payout::where('id', $id)->first();
+        $bonus = Bonus::where('id', $id)->first();
         if(Payout::where('bonus_id' , $id)->count() > 0){
             return redirect()->back()->with(["message" => "Info : Bonus Sedang digunakan!"]);
         }else {

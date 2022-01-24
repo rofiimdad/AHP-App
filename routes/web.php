@@ -21,13 +21,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Route::get('/', function () {
+//     return view('layouts.print');
+// });
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [Controller::class, 'dashboard'])->name('dashboard');
-
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [Controller::class, 'dashboard'])->name('dashboard');
 
     Route::get('/karyawan', [EmployeController::class, 'index'])->name('karyawan');
     Route::post('/inputKaryawan', [EmployeController::class, 'store'])->name('inputKaryawan');
@@ -37,11 +37,17 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/ratioAlternative', [RatioAlternativeController::class, 'index'])->name('ratioAlternative');
     Route::post('/addRatioAlternative', [RatioAlternativeController::class, 'store'])->name('addRatioAlternative');
-    Route::get('/resultAlternative', function(){
+    Route::get('/resultAlternative', function () {
+
         $data = RatioAlternativeController::showAlternative();
+
+        if (!$data) {
+            return redirect('ratioAlternative')->with(['message' => 'data belum lengkap']);
+        }
         return view('pages.ratioAlternative')->with('data', $data);
     })->name('resultAlternative');
     Route::get('/deleteRatioAlternative/{criterias_id}/{v_id}/{h_id}', [RatioAlternativeController::class, 'destroy'])->name('deleteRatioAlternative');
+    Route::post('/massRatioAlternative', [RatioAlternativeController::class, 'massUpdate'])->name('massRatioAlternative');
 
     Route::get('/criteria', [CriteriaController::class, 'index'])->name('criteria');
     Route::post('/addCriteria', [CriteriaController::class, 'store'])->name('addCriteria');
@@ -53,34 +59,26 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/deleteRatioCriteria/{v_id}/{h_id}', [RatioCriteriaController::class, 'destroy'])->name('deleteRatioCriteria');
 
     Route::get('/payout', [PayoutController::class, 'index'])->name('payout');
-    Route::post('/payout', [PayoutController::class, 'show'])->name('payout');
+    Route::get('/filterpayout', [PayoutController::class, 'show'])->name('filterpayout');
     Route::post('/addPayout', [PayoutController::class, 'store'])->name('addPayout');
     Route::post('/updatePayout', [PayoutController::class, 'update'])->name('updatePayout');
     Route::get('/deletePayout/{id}', [PayoutController::class, 'destroy'])->name('deletePayout');
 
     Route::post('/addBonus', [BonusController::class, 'store'])->name('addBonus');
     Route::post('/updateBonus', [BonusController::class, 'update'])->name('updateBonus');
-    Route::post('/deleteBonus/{id}', [BonusController::class, 'destroy'])->name('deleteBonus');
+    Route::get('/deleteBonus/{id}', [BonusController::class, 'destroy'])->name('deleteBonus');
 
     Route::get('/criteriaData', [DataCriteriaController::class, 'index'])->name('criteriaData');
     Route::post('/upsertData', [DataCriteriaController::class, 'store'])->name('upsertData');
+    Route::get('/deleteData/{id}', [DataCriteriaController::class, 'destroy'])->name('deleteData');
+
 
     Route::get('/userList', [Controller::class, 'index'])->name('userList');
     Route::post('/addUser', [Controller::class, 'save'])->name('addUser');
+    Route::get('/deleteUser/{id}', [Controller::class, 'deleteUser'])->name('deleteUser');
 
-    Route::get('/print/{date}/{id}', function ($date, $id) {
-        $data = App\Models\Payout::whereYear('period',  date("Y", strtotime($date)))
-        ->whereMonth('period', date("m", strtotime($date)))
-        ->where('payouts.employe_id', $id)
-        ->leftjoin('bonuses', 'bonuses.id', 'bonus_id')
-        ->join('employes', 'employes.id', 'employe_id')
-        ->leftjoin('positions', 'positions.id', 'employes.position_id')
-        ->select('payouts.*', 'employes.*', 'bonuses.name as bonus_name', 'bonuses.value as bonus_value', 'positions.name as position')
-        ->first();
-        // dd($data);
-        return view('layouts.print')->with('data', $data);
-    })->name('print');
+    Route::get('/print/{date}', [Controller::class, 'print'])->name('print');
 });
 
 
-    require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

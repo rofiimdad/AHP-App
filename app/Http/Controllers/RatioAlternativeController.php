@@ -28,18 +28,24 @@ class RatioAlternativeController extends Controller
      */
     public function index()
     {
-        $employe = Employe::select('id', 'name')->get()->toArray();
-        $criteria = Criteria::all()->toArray();
-        $ratio = Ratio_alternative::join('criterias', 'ratio_alternatives.criteria_id', '=', 'criterias.id')
-                                ->join('employes as v_employes', 'ratio_alternatives.v_alternative_id', '=', 'v_employes.id')
-                                ->join('employes as h_employes', 'ratio_alternatives.h_alternative_id', '=', 'h_employes.id')
-                                ->select('ratio_alternatives.value', 'v_employes.name as v_name', 'h_employes.name as h_name', 'criterias.name as criterias_name' ,'criterias.id as criterias_id' , 'v_employes.id as v_id', 'h_employes.id as h_id')
-                                ->get()->toArray();
-        $data = (object)[
-            'employe' => $employe,
-            'criteria' => $criteria,
-            'ratio' => $ratio,
-        ];
+        try {
+
+            $employe = Employe::select('id', 'name')->get()->toArray();
+            $criteria = Criteria::all()->toArray();
+            $ratio = Ratio_alternative::join('criterias', 'ratio_alternatives.criteria_id', '=', 'criterias.id')
+                ->join('employes as v_employes', 'ratio_alternatives.v_alternative_id', '=', 'v_employes.id')
+                ->join('employes as h_employes', 'ratio_alternatives.h_alternative_id', '=', 'h_employes.id')
+                ->select('ratio_alternatives.value', 'v_employes.name as v_name', 'h_employes.name as h_name', 'criterias.name as criterias_name', 'criterias.id as criterias_id', 'v_employes.id as v_id', 'h_employes.id as h_id')
+                ->get()->toArray();
+            $data = (object)[
+                'employe' => $employe,
+                'criteria' => $criteria,
+                'ratio' => $ratio,
+            ];
+        } catch (\Throwable $th) {
+            return redirect('criteria')->with(['message' => 'data belum lengkap']);
+            $data = null;
+        }
         //  dd($ratio);
 
         return view('pages.alternative')->with('data', $data);
@@ -69,10 +75,10 @@ class RatioAlternativeController extends Controller
         }
 
         Ratio_alternative::create([
-                'criteria_id' => $request->criteria,
-                'v_alternative_id' => $request->v_alternative,
-                'h_alternative_id' => $request->h_alternative,
-                'value' => $request->value,
+            'criteria_id' => $request->criteria,
+            'v_alternative_id' => $request->v_alternative,
+            'h_alternative_id' => $request->h_alternative,
+            'value' => $request->value,
         ]);
 
         Ratio_alternative::create([
@@ -102,11 +108,12 @@ class RatioAlternativeController extends Controller
             foreach ($employe as $employes) {
                 $column = $employes['id'];
                 $nameColumn = $employes['name'];
-                $validate_exist = Ratio_alternative::where(function($query) use ($column){
-                                                    $query->where('v_alternative_id', $column)
-                                                            ->orWhere('h_alternative_id', $column);})
-                                                    ->where('criteria_id', $criterias['id'])
-                                                    ->count();
+                $validate_exist = Ratio_alternative::where(function ($query) use ($column) {
+                    $query->where('v_alternative_id', $column)
+                        ->orWhere('h_alternative_id', $column);
+                })
+                    ->where('criteria_id', $criterias['id'])
+                    ->count();
                 if ($validate_exist < 1) {
                     continue;
                 }
@@ -114,8 +121,8 @@ class RatioAlternativeController extends Controller
                     $row = $dataEmployes['id'];
                     $nameRow = $dataEmployes['name'];
                     $dataRatio = Ratio_alternative::where('v_alternative_id', $column)
-                                                    ->where('h_alternative_id', $row)
-                                                    ->where('criteria_id', $criterias['id']);
+                        ->where('h_alternative_id', $row)
+                        ->where('criteria_id', $criterias['id']);
 
                     if ($column == $row) {
                         $value = 1;
@@ -141,8 +148,8 @@ class RatioAlternativeController extends Controller
             }
             // dd(RatioCriteriaController::reverseMatrix($matrix));
             if ($validate_exist) {
-            $altMatrix[$criterias['name']]['ratio'] = RatioCriteriaController::reverseMatrix($matrix);
-            $altMatrix[$criterias['name']]['eigen'] = RatioCriteriaController::eigen($altMatrix[$criterias['name']]['ratio']);
+                $altMatrix[$criterias['name']]['ratio'] = RatioCriteriaController::reverseMatrix($matrix);
+                $altMatrix[$criterias['name']]['eigen'] = RatioCriteriaController::eigen($altMatrix[$criterias['name']]['ratio']);
             }
         }
 
@@ -154,7 +161,36 @@ class RatioAlternativeController extends Controller
         return $altMatrix;
     }
 
-    public function destroy($criterias_id, $v_id, $h_id, )
+
+    public function massUpdate(Request $request)
+    {
+        foreach ($request->except(['_token', 'criteria', 'alternative'])  as $key => $value) {
+            $keyID = Employe::getIdfromName($key);
+            $crtID = Criteria::getIdfromName($request->criteria);
+            $altID = Employe::getIdfromName($request->alternative);
+            if ($keyID == $altID) {
+                continue;
+            };
+            Ratio_alternative::where([
+                ['criteria_id', '=', $crtID],
+                ['v_alternative_id', '=', $keyID],
+                ['h_alternative_id', '=', $altID],
+            ])->update([
+                'value' => (1 / $value),
+            ]);
+            Ratio_alternative::where([
+                ['criteria_id', '=', $crtID],
+                ['v_alternative_id', '=', $altID],
+                ['h_alternative_id', '=', $keyID],
+            ])->update([
+                'value' => $value,
+            ]);
+        }
+
+        return redirect()->back()->with('message', 'Input Data Sukses');
+    }
+
+    public function destroy($criterias_id, $v_id, $h_id,)
     {
 
         $ratio = Ratio_alternative::where('criteria_id', $criterias_id)
@@ -169,5 +205,4 @@ class RatioAlternativeController extends Controller
 
         return redirect()->back()->with(["message" => "delet data perbanfdingan " . $ratio->value . " dan " . $reverseratio->value]);
     }
-
 }
